@@ -1,33 +1,43 @@
-# insurance_app.py
-
 import streamlit as st
 import pandas as pd
 import numpy as np
-import joblib  # to load saved model
 from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.model_selection import train_test_split
 
-# Load the model
-@st.cache_resource
-def load_model():
-    model = joblib.load('gradient_boost_model.pkl')
-    return model
-
-model = load_model()
-
-# Streamlit UI
+# App title and description
 st.title("💸 Insurance Charges Predictor")
 st.write("Estimate medical insurance charges based on demographics and lifestyle.")
 
-# User input
-age = st.slider("Age", 18, 65, 30)
-sex = st.selectbox("Sex", ["male", "female"])
-bmi = st.number_input("BMI (Body Mass Index)", 10.0, 50.0, 25.0)
-children = st.slider("Number of Children", 0, 5, 0)
-smoker = st.selectbox("Smoker", ["yes", "no"])
-region = st.selectbox("Region", ["northeast", "northwest", "southeast", "southwest"])
+# Cache the model training function
+@st.cache_resource
+def train_model():
+    df = pd.read_csv("insurance.csv")
+    df = pd.get_dummies(df, columns=['sex', 'smoker', 'region'], drop_first=True)
+    df['high_risk'] = ((df['smoker_yes'] == 1) & (df['bmi'] > 30)).astype(int)
 
-# Prepare input
-input_dict = {
+    X = df.drop('charges', axis=1)
+    y = df['charges']
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    model = GradientBoostingRegressor(random_state=42)
+    model.fit(X_train, y_train)
+
+    return model
+
+model = train_model()
+
+# Sidebar inputs
+st.sidebar.header("Enter Input Values")
+
+age = st.sidebar.slider("Age", 18, 65, 30)
+sex = st.sidebar.selectbox("Sex", ["male", "female"])
+bmi = st.sidebar.number_input("BMI (Body Mass Index)", 10.0, 50.0, 25.0)
+children = st.sidebar.slider("Number of Children", 0, 5, 0)
+smoker = st.sidebar.selectbox("Smoker", ["yes", "no"])
+region = st.sidebar.selectbox("Region", ["northeast", "northwest", "southeast", "southwest"])
+
+# Prepare input for model
+input_data = {
     'age': age,
     'bmi': bmi,
     'children': children,
@@ -39,7 +49,7 @@ input_dict = {
     'high_risk': int((smoker == 'yes') and (bmi > 30))
 }
 
-input_df = pd.DataFrame([input_dict])
+input_df = pd.DataFrame([input_data])
 
 # Prediction
 if st.button("Predict Charges"):
