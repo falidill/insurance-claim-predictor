@@ -44,5 +44,28 @@ It’s a simplified version of how actuaries and pricing analysts estimate indiv
 ---
 
 ## 📁 File Structure
+📦 insurance-claim-predictor
+│
+├── insurance_app.py # Streamlit app
+├── insurance.csv # Dataset
+├── requirements.txt # Dependencies for Streamlit Cloud
+└── README.md # This file
+
+
+---
+
+## 🙋🏽‍♀️ About Me
+
+Hi, I’m Fali Honutse — a Data Science graduate with a background in Actuarial Science, Finance, and Statistics. I love using data to make decision-making clearer and more human-centered.
+
+💼 [LinkedIn](https://www.linkedin.com/in/fali-dillys-honutse)  
+📬 [Portfolio] (https://falidill.github.io/portfolio-website/)) 
+
+---
+
+## 📝 License
+
+This project is open-source and for educational/demo purposes.
+
 
 
